@@ -18,6 +18,10 @@ type Heartbeat struct {
 	Type        string     `json:"type,omitempty"`
 }
 
+type HeartbeatResult struct {
+	Data []Heartbeat `json:"data"`
+}
+
 // HeartbeatParameters are the query parameters used for GetHeartbeats.
 type HeartbeatParameters struct {
 	Date *time.Time
@@ -28,7 +32,7 @@ type HeartbeatParameters struct {
 
 // GetHeartbeats returns heartbeats for the given user and parameters.
 func (waka *WakaTime) GetHeartbeats(heartbeatParameters *HeartbeatParameters) ([]Heartbeat, error) {
-	var heartbeat []Heartbeat
+	var heartbeatResult HeartbeatResult
 	if heartbeatParameters.User == "" {
 		heartbeatParameters.User = "current"
 	}
@@ -40,6 +44,6 @@ func (waka *WakaTime) GetHeartbeats(heartbeatParameters *HeartbeatParameters) ([
 		encodedParams = "?" + encodedParams
 	}
 
-	err := waka.getURL(fmt.Sprintf("users/%s/heartbeats%s", heartbeatParameters.User, encodedParams), true, &heartbeat)
-	return heartbeat, err
+	err := waka.getURL(fmt.Sprintf("users/%s/heartbeats%s", heartbeatParameters.User, encodedParams), false, &heartbeatResult)
+	return heartbeatResult.Data, err
 }
